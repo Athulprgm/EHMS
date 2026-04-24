@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, User, Phone, Calendar, FileText, FlaskConical } from "lucide-react";
-import { patients, records, lab_reports } from "../data/mockData";
+import { useAppContext } from "../context/AppContext";
 
 export function PatientDetails() {
   const { id } = useParams();
+  const { patients, records, labReports } = useAppContext();
   const patient = patients.find(p => p.id === parseInt(id));
   const [activeTab, setActiveTab] = useState("records");
 
@@ -18,7 +19,7 @@ export function PatientDetails() {
   }
 
   const patientRecords = records.filter(r => r.patient_id === patient.id);
-  const patientLabs = lab_reports.filter(l => l.patient_id === patient.id);
+  const patientLabs = labReports.filter(l => l.patient_id === patient.id);
 
   return (
     <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500 fade-in">

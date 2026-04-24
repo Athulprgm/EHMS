@@ -7,7 +7,7 @@ export function Register() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('nurse');
+  const [role, setRole] = useState('doctor');
   const [error, setError] = useState('');
   const { register, login } = useAppContext();
   const navigate = useNavigate();
@@ -99,9 +99,11 @@ export function Register() {
                   onChange={(e) => setRole(e.target.value)}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-white"
                 >
+                  <option value="user">User</option>
                   <option value="nurse">Nurse</option>
                   <option value="doctor">Doctor</option>
                   <option value="admin">Admin</option>
+                  <option value="superadmin">Super Admin</option>
                 </select>
               </div>
             </div>

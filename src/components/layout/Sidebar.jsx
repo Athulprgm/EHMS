@@ -25,7 +25,7 @@ export function Sidebar() {
       </div>
       
       <nav className="flex-1 mt-6 px-4 space-y-2">
-        {links.filter(link => !link.adminOnly || session?.role === 'admin' || session?.role === 'Admin').map((link) => {
+        {links.filter(link => !link.adminOnly || session?.role === 'admin' || session?.role === 'Admin' || session?.role === 'superadmin' || session?.role === 'Superadmin').map((link) => {
           const isActive = location.pathname === link.path || (link.path !== '/' && location.pathname.startsWith(link.path));
           return (
             <Link

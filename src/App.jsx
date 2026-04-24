@@ -28,7 +28,7 @@ function App() {
               <Route path="records" element={<Records />} />
               <Route path="lab-reports" element={<LabReports />} />
               
-              <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+              <Route element={<ProtectedRoute allowedRoles={['admin', 'superadmin']} />}>
                 <Route path="users" element={<Users />} />
               </Route>
               

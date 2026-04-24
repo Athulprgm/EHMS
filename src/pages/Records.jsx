@@ -1,10 +1,27 @@
 import { useState } from "react";
 import { Plus, Search, Calendar, FileText, User } from "lucide-react";
-import { records, patients } from "../data/mockData";
+import { useAppContext } from "../context/AppContext";
 
 export function Records() {
+  const { records, patients, addRecord } = useAppContext();
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newRecord, setNewRecord] = useState({ patient_id: '', note: '', diagnosis: '' });
+
+  const handleAddRecord = (e) => {
+    e.preventDefault();
+    if (newRecord.patient_id && (newRecord.note || newRecord.diagnosis)) {
+      addRecord({
+        patient_id: parseInt(newRecord.patient_id),
+        note: `${newRecord.diagnosis ? `[${newRecord.diagnosis}] ` : ''}${newRecord.note}`,
+        date: new Date().toISOString().split('T')[0]
+      });
+      setIsModalOpen(false);
+      setNewRecord({ patient_id: '', note: '', diagnosis: '' });
+    }
+  };
+
+  const filteredRecords = records.filter(r => r.note.toLowerCase().includes(searchTerm.toLowerCase()));
 
   return (
     <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500 fade-in">
@@ -38,7 +55,7 @@ export function Records() {
 
         <div className="p-6">
           <div className="relative border-l border-gray-200 ml-4 space-y-10 pb-4">
-            {records.map(record => {
+            {filteredRecords.map(record => {
               const patient = patients.find(p => p.id === record.patient_id);
               return (
                 <div key={record.id} className="relative pl-8">
@@ -75,27 +92,46 @@ export function Records() {
               <h3 className="text-lg font-semibold text-gray-900">Add New Record</h3>
               <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600">✕</button>
             </div>
-            <div className="px-6 py-5 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Patient</label>
-                <select className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
-                  <option value="">Select Patient</option>
-                  {patients.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-                </select>
+            <form onSubmit={handleAddRecord}>
+              <div className="px-6 py-5 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Patient</label>
+                  <select 
+                    required
+                    value={newRecord.patient_id}
+                    onChange={(e) => setNewRecord({...newRecord, patient_id: e.target.value})}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  >
+                    <option value="">Select Patient</option>
+                    {patients.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Diagnosis / Title</label>
+                  <input 
+                    type="text" 
+                    value={newRecord.diagnosis}
+                    onChange={(e) => setNewRecord({...newRecord, diagnosis: e.target.value})}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" 
+                    placeholder="E.g., Common Cold" 
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Notes & Prescription</label>
+                  <textarea 
+                    required
+                    value={newRecord.note}
+                    onChange={(e) => setNewRecord({...newRecord, note: e.target.value})}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary h-24 resize-none" 
+                    placeholder="Enter clinical notes..."
+                  ></textarea>
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Diagnosis</label>
-                <input type="text" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="E.g., Common Cold" />
+              <div className="px-6 py-4 border-t border-gray-100 bg-gray-50 flex justify-end space-x-3">
+                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">Cancel</button>
+                <button type="submit" className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-blue-700 transition-colors shadow-sm">Save Record</button>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Notes & Prescription</label>
-                <textarea className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary h-24 resize-none" placeholder="Enter clinical notes..."></textarea>
-              </div>
-            </div>
-            <div className="px-6 py-4 border-t border-gray-100 bg-gray-50 flex justify-end space-x-3">
-              <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">Cancel</button>
-              <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-blue-700 transition-colors shadow-sm">Save Record</button>
-            </div>
+            </form>
           </div>
         </div>
       )}

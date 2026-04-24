@@ -1,9 +1,24 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { UploadCloud, FileText, CheckCircle2, Search, Download } from "lucide-react";
-import { lab_reports, patients } from "../data/mockData";
+import { useAppContext } from "../context/AppContext";
 
 export function LabReports() {
+  const { labReports, patients, addLabReport } = useAppContext();
   const [searchTerm, setSearchTerm] = useState("");
+  const fileInputRef = useRef(null);
+
+  const handleSimulatedUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (file && patients.length > 0) {
+      addLabReport({
+        patient_id: patients[0].id, // For mock purposes, just attach to first patient
+        file: file.name,
+        status: "uploaded",
+        date: new Date().toISOString().split('T')[0]
+      });
+      alert(`Report ${file.name} uploaded successfully and assigned to ${patients[0].name}. (Simulated)`);
+    }
+  };
 
   return (
     <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500 fade-in">
@@ -12,7 +27,10 @@ export function LabReports() {
         <p className="text-gray-500 mt-1">Manage and view diagnostic reports</p>
       </div>
 
-      <div className="bg-white p-8 rounded-2xl shadow-sm border border-dashed border-gray-300 flex flex-col items-center justify-center text-center hover:bg-gray-50/50 transition-colors cursor-pointer group">
+      <div 
+        className="bg-white p-8 rounded-2xl shadow-sm border border-dashed border-gray-300 flex flex-col items-center justify-center text-center hover:bg-gray-50/50 transition-colors cursor-pointer group"
+        onClick={() => fileInputRef.current?.click()}
+      >
         <div className="w-16 h-16 rounded-full bg-blue-50 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
           <UploadCloud size={32} />
         </div>
@@ -23,6 +41,7 @@ export function LabReports() {
         <button className="mt-4 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 shadow-sm">
           Select Files
         </button>
+        <input type="file" ref={fileInputRef} className="hidden" onChange={handleSimulatedUpload} />
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
@@ -51,7 +70,7 @@ export function LabReports() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {lab_reports.map((report) => {
+              {labReports.map((report) => {
                 const patient = patients.find(p => p.id === report.patient_id);
                 return (
                   <tr key={report.id} className="hover:bg-gray-50 transition-colors group">

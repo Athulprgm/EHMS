@@ -4,8 +4,8 @@ import { Shield } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 
 export function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('admin@ehs.com');
+  const [password, setPassword] = useState('password123');
   const [error, setError] = useState('');
   const { login } = useAppContext();
   const navigate = useNavigate();

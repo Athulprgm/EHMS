@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Plus, Search, MoreHorizontal, ShieldCheck } from "lucide-react";
-import { users } from "../data/mockData";
+import { Plus, Search, MoreHorizontal, ShieldCheck, Trash2 } from "lucide-react";
+import { useAppContext } from "../context/AppContext";
 
 export function Users() {
+  const { users, deleteUser } = useAppContext();
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredUsers = users.filter(u => 
@@ -75,8 +76,12 @@ export function Users() {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <button className="text-gray-400 hover:text-gray-700 transition-colors p-2 rounded-lg hover:bg-gray-100 opacity-0 group-hover:opacity-100">
-                      <MoreHorizontal size={18} />
+                    <button 
+                      onClick={() => deleteUser(user.id)}
+                      className="text-gray-400 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-red-50 opacity-0 group-hover:opacity-100"
+                      title="Delete User"
+                    >
+                      <Trash2 size={18} />
                     </button>
                   </td>
                 </tr>
