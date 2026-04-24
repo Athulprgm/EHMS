@@ -1,15 +1,17 @@
 import { Link, useLocation } from "react-router-dom";
 import { LayoutDashboard, Users, FileText, FlaskConical, Settings, Shield } from "lucide-react";
+import { useAppContext } from "../../context/AppContext";
 
 export function Sidebar() {
   const location = useLocation();
+  const { session } = useAppContext();
 
   const links = [
     { name: "Dashboard", path: "/", icon: <LayoutDashboard size={20} /> },
     { name: "Patients", path: "/patients", icon: <Users size={20} /> },
     { name: "Records", path: "/records", icon: <FileText size={20} /> },
     { name: "Lab Reports", path: "/lab-reports", icon: <FlaskConical size={20} /> },
-    { name: "Users", path: "/users", icon: <Shield size={20} /> },
+    { name: "Users", path: "/users", icon: <Shield size={20} />, adminOnly: true },
     { name: "Settings", path: "/settings", icon: <Settings size={20} /> },
   ];
 
@@ -23,7 +25,7 @@ export function Sidebar() {
       </div>
       
       <nav className="flex-1 mt-6 px-4 space-y-2">
-        {links.map((link) => {
+        {links.filter(link => !link.adminOnly || session?.role === 'admin' || session?.role === 'Admin').map((link) => {
           const isActive = location.pathname === link.path || (link.path !== '/' && location.pathname.startsWith(link.path));
           return (
             <Link
@@ -46,12 +48,12 @@ export function Sidebar() {
       
       <div className="p-4 border-t border-gray-800">
         <div className="bg-gray-800 rounded-lg p-4 flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-full bg-gray-700 flex flex-shrink-0 items-center justify-center text-white font-bold">
-            JD
+          <div className="w-10 h-10 rounded-full bg-gray-700 flex flex-shrink-0 items-center justify-center text-white font-bold capitalize">
+            {session?.name?.charAt(0) || 'U'}
           </div>
-          <div className="min-w-0">
-            <p className="text-sm font-medium text-white truncate">Dr. John Doe</p>
-            <p className="text-xs text-gray-400 truncate">Administrator</p>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-medium text-white truncate">{session?.name || 'User'}</p>
+            <p className="text-xs text-gray-400 truncate capitalize">{session?.role || 'Staff'}</p>
           </div>
         </div>
       </div>

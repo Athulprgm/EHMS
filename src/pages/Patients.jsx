@@ -1,16 +1,33 @@
 import { useState } from "react";
-import { Search, Plus, MoreVertical, Edit2, Trash2 } from "lucide-react";
+import { Search, Plus, Edit2, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { patients as initialPatients } from "../data/mockData";
+import { useAppContext } from "../context/AppContext";
 
 export function Patients() {
-  const [patients, setPatients] = useState(initialPatients);
+  const { patients, addPatient, deletePatient } = useAppContext();
   const [searchTerm, setSearchTerm] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newPatient, setNewPatient] = useState({ name: '', age: '', phone: '', status: 'Active' });
 
   const filteredPatients = patients.filter(p => 
     p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     p.phone.includes(searchTerm)
   );
+
+  const handleAddPatient = (e) => {
+    e.preventDefault();
+    if (newPatient.name && newPatient.age && newPatient.phone) {
+      addPatient(newPatient);
+      setIsModalOpen(false);
+      setNewPatient({ name: '', age: '', phone: '', status: 'Active' });
+    }
+  };
+
+  const handleDelete = (id) => {
+    if (window.confirm("Are you sure you want to delete this patient?")) {
+      deletePatient(id);
+    }
+  };
 
   return (
     <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500 fade-in">
@@ -19,7 +36,10 @@ export function Patients() {
           <h1 className="text-3xl font-bold tracking-tight text-gray-900">Patients</h1>
           <p className="text-gray-500 mt-1">Manage your patient directory</p>
         </div>
-        <button className="flex items-center space-x-2 bg-primary hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg font-medium transition-colors shadow-sm">
+        <button 
+          onClick={() => setIsModalOpen(true)}
+          className="flex items-center space-x-2 bg-primary hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg font-medium transition-colors shadow-sm"
+        >
           <Plus size={18} />
           <span>Add Patient</span>
         </button>
@@ -76,7 +96,7 @@ export function Patients() {
                         <Link to={`/patients/${patient.id}`} className="text-gray-400 hover:text-primary transition-colors">
                           <Edit2 size={16} />
                         </Link>
-                        <button className="text-gray-400 hover:text-red-500 transition-colors">
+                        <button onClick={() => handleDelete(patient.id)} className="text-gray-400 hover:text-red-500 transition-colors">
                           <Trash2 size={16} />
                         </button>
                       </div>
@@ -94,6 +114,37 @@ export function Patients() {
           </table>
         </div>
       </div>
+
+      {isModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50 px-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+              <h3 className="text-lg font-semibold text-gray-900">Add New Patient</h3>
+              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600">✕</button>
+            </div>
+            <form onSubmit={handleAddPatient}>
+              <div className="px-6 py-5 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                  <input type="text" value={newPatient.name} onChange={e => setNewPatient({...newPatient, name: e.target.value})} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" required />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Age</label>
+                  <input type="number" value={newPatient.age} onChange={e => setNewPatient({...newPatient, age: e.target.value})} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" required />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                  <input type="tel" value={newPatient.phone} onChange={e => setNewPatient({...newPatient, phone: e.target.value})} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" required />
+                </div>
+              </div>
+              <div className="px-6 py-4 border-t border-gray-100 bg-gray-50 flex justify-end space-x-3">
+                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">Cancel</button>
+                <button type="submit" className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-blue-700 transition-colors shadow-sm">Save Patient</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

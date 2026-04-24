@@ -1,6 +1,16 @@
-import { Search, Bell, Menu } from "lucide-react";
+import { Search, Bell, Menu, LogOut } from "lucide-react";
+import { useAppContext } from "../../context/AppContext";
+import { useNavigate } from "react-router-dom";
 
 export function Topbar() {
+  const { session, logout } = useAppContext();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   return (
     <header className="h-16 bg-white border-b border-border flex items-center justify-between px-6 sticky top-0 z-10">
       <div className="flex flex-1 items-center">
@@ -23,8 +33,11 @@ export function Topbar() {
           <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
         </button>
         <div className="h-8 w-8 rounded-full bg-gradient-to-r from-primary to-blue-400 flex items-center justify-center text-white font-medium cursor-pointer shadow-sm hover:shadow-md transition-shadow">
-          JD
+          {session?.name?.charAt(0) || 'U'}
         </div>
+        <button onClick={handleLogout} className="p-2 text-gray-400 hover:text-red-600 rounded-full hover:bg-red-50 transition-colors" title="Logout">
+          <LogOut size={20} />
+        </button>
       </div>
     </header>
   );

@@ -1,26 +1,27 @@
 import { Users, FileText, Activity } from "lucide-react";
-import { patients, records } from "../data/mockData";
+import { useAppContext } from "../context/AppContext";
 
 export function Dashboard() {
+  const { patients, records, users, labReports } = useAppContext();
   const stats = [
     { 
       name: "Total Patients", 
-      value: "1,248", 
-      trend: "+12% from last month",
+      value: patients.length.toString(), 
+      trend: "Total registered",
       icon: <Users className="text-blue-500" size={24} />,
       bg: "bg-blue-50" 
     },
     { 
       name: "Total Reports", 
-      value: "3,402", 
-      trend: "+8% from last month",
+      value: labReports.length.toString(), 
+      trend: "Uploaded reports",
       icon: <FileText className="text-green-500" size={24} />,
       bg: "bg-green-50" 
     },
     { 
       name: "Active Users", 
-      value: "42", 
-      trend: "+2 new this week",
+      value: users.length.toString(), 
+      trend: "System staff",
       icon: <Activity className="text-purple-500" size={24} />,
       bg: "bg-purple-50" 
     }
